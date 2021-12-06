@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>SignalR Test</title>
+</head>
+<body>
+	<h1>Проверка обновления в реальном времени</h1>
+	<h2>Начните обновлять данные</h2>
+	<div id="parkingsRoom"></div>
+	<script src="js/microsoft/signalr/dist/browser/signalr.min.js"></script>
+	<script>
+		//let hubUrl = "http://localhost:22147/connect";
+		//let hubUrl = "http://192.168.1.243:3000/connect";
+		let hubUrl = "http://89.108.88.254:81/connect";
+		const hubConnection = new signalR.HubConnectionBuilder()
+			.withUrl(hubUrl)
+			.configureLogging(signalR.LogLevel.Information)
+			.build();
+		// получение сообщения от сервера
+		hubConnection.on("Notify", function (parkingId, newFreeValueSpaces) {
+
+			// создаем элемент <b> для имени пользователя
+			let userNameElem = document.createElement("b");
+			userNameElem.appendChild(document.createTextNode(parkingId + ": "));
+
+			// создает элемент <p> для сообщения пользователя
+			let elem = document.createElement("p");
+			elem.appendChild(userNameElem);
+			elem.appendChild(document.createTextNode(newFreeValueSpaces));
+
+			var firstElem = document.getElementById("parkingsRoom").firstChild;
+			document.getElementById("parkingsRoom").insertBefore(elem, firstElem);
+		});
+		hubConnection.start();
+	</script>
+</body>
+</html>

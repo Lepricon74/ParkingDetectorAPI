@@ -9,16 +9,12 @@ namespace ParkingDetectorAPI.DBRepository
 {
     public class ParkingDetectorAPIContext : DbContext
     {
-        public ParkingDetectorAPIContext(DbContextOptions<ParkingDetectorAPIContext> options) : base(options)
-        {
-
-        }
-
+        public ParkingDetectorAPIContext(DbContextOptions<ParkingDetectorAPIContext> options) : base(options){   }
         public DbSet<Parking> Parkings { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            //Устанавливаем поле Id в качестве первичного ключа
             modelBuilder.Entity<Parking>().HasKey(u => new { u.Id });
         }
     }

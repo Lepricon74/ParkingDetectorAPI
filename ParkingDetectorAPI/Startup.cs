@@ -13,6 +13,7 @@ using ParkingDetectorAPI.DBRepository;
 using Microsoft.OpenApi.Models;
 //Нужно при использовании обратного прокси-сервера
 using Microsoft.AspNetCore.HttpOverrides;
+using ParkingDetectorAPI.Hubs;
 
 namespace ParkingDetectorAPI
 {
@@ -31,11 +32,14 @@ namespace ParkingDetectorAPI
             string connection = Configuration.GetConnectionString("PostgreSQLExternalConnection");
             services.AddDbContext<ParkingDetectorAPIContext>(options => options.UseNpgsql(connection));
 
+            services.AddCors();
 
             //services.AddMvc(options => options.EnableEndpointRouting = false);
             services.AddMvc();
             services.AddControllersWithViews();
             services.AddControllers();
+
+            services.AddSignalR();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -73,11 +77,14 @@ namespace ParkingDetectorAPI
 
             app.UseRouting();
 
+            app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}");
+                endpoints.MapHub<NewFreeValueHub>("/connect");
                 endpoints.MapControllers();
             });
           
